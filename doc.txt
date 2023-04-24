@@ -1,2 +1,3 @@
 - capire la formula da usare per definire la safeness
 - https://lichess.org/api#tag/Analysis per l'api
+- refactor in rust  
