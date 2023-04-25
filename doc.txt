@@ -1,3 +1,4 @@
 - capire la formula da usare per definire la safeness
 - https://lichess.org/api#tag/Analysis per l'api
-- refactor in rust  
+- convertire tutto in rust  
+- provare con una variante a capire il suo cp e i cp delle prossime mosse (5) e calcolare la safeness con l'algoritmo
