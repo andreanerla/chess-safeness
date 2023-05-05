@@ -1,0 +1,5 @@
+problemi:
+
+-division by zero error
+
+-in posizioni completamente patte da safeness 0%

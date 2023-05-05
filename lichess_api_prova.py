@@ -1,63 +1,28 @@
-import requests
-#import numpy as np
-import asyncio
-import chess  
-import chess.engine
-import logging
-from dataclasses import dataclass
+from helper import evals_ordering, colour_from_fen, average_cp, safeness_calculator_plain_difference, safeness_calculator_unweighted, uci_moves_to_list, cp_score_to_int  
+from helper import Colour
+from chess import engine, Board
+import chess
 
-logging.getLogger().setLevel(logging.INFO) #to display also info in terminal
+if __name__ == "__main__":
+    engine = engine.SimpleEngine.popen_uci("/usr/games/stockfish")
 
-###############
-#TYPES
-###############
-@dataclass
-class Colour:
-    colour: str = "black", "white"  
+    test_fen = "8/k7/1p5p/p3P1P1/b7/8/5KP1/8 w - - 0 49"
+    draw_fen = "8/7k/8/7P/8/8/3K4/8 w - - 0 1"
+    king_gambit_fen = "rnbqkbnr/pppp1ppp/8/4p3/4PP2/8/PPPP2PP/RNBQKBNR b KQkq - 0 2"
 
+    board = Board(test_fen)
+    info = engine.analyse(board, chess.engine.Limit(depth=15), multipv=5)
 
-###############
-#FUNCS
-###############
-
-def average_cp(cp_list: list) -> int:
-    #average of a list
-
-    return sum(cp_list) / len(cp_list)
+    various_evals = [cp_score_to_int(var) for var in info]
 
 
-def safeness_calculator_unweighted(cp_list: list, colour: Colour) -> int:
-    #calculates the ratio of cp of best move and average cp of its n variations, espressed in %.
-    if colour == "black":
-        cp_list.reverse()
+    # safeness_test = safeness_calculator_unweighted(various_evals, colour="black")
 
-    logging.info(f"cp_list: {cp_list}")
+    colour = colour_from_fen(test_fen)
 
-    safeness_perc = round((average_cp(cp_list) / cp_list[0])  * 100, 2)  
-    logging.info(f"safeness_perc: {safeness_perc}")
-    return safeness_perc
+    ordered_evals = evals_ordering(various_evals, colour)
 
+    safeness_plain_diff_test = safeness_calculator_plain_difference(various_evals)
 
-def uci_moves_to_list(uci_moves: str) -> list:
-    str_to_list = uci_moves.split(sep=" ")
-    return str_to_list
-
-
-def cp_score_to_int(variant: dict) -> int:
-    #gets a sf variant, returns cp in int 
-    cp_int = variant['score'].relative.score()
-    return cp_int
-
-engine = chess.engine.SimpleEngine.popen_uci("/usr/games/stockfish")
-
-test_fen = "8/k5p1/1p6/p3P1PP/b7/8/5KP1/8 b - - 0 48"
-
-board = chess.Board(test_fen)
-info = engine.analyse(board, chess.engine.Limit(depth=10), multipv=5)
-
-various_evals = [cp_score_to_int(var) for var in info]
-
-safeness_test = safeness_calculator_unweighted(various_evals, colour="black")
-
-engine.quit()
+    engine.quit()
 
