@@ -1,6 +1,14 @@
+problemi:
+-division by zero error
+-in posizioni completamente patte da safeness 0%
+
+problemi nel campo delle idee:
 - capire la formula da usare per definire la safeness
 - https://lichess.org/api#tag/Analysis per l'api
 - convertire tutto in rust  
 - provare con una variante a capire il suo cp e i cp delle prossime mosse (5) e calcolare la safeness con l'algoritmo
 -aggiustare i centipawns tramite i pesi
 -estrarre il board color dal fen 
+-la safeness deve essere assoluta o relativa
+
+-capire come applicare pesi alla standard deviation
