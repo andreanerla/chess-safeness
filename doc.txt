@@ -1,6 +1,6 @@
 problemi:
 -division by zero error
--in posizioni completamente patte da safeness 0%
+-in posizioni completamente patte dà safeness 0%
 
 problemi nel campo delle idee:
 - capire la formula da usare per definire la safeness
@@ -10,5 +10,12 @@ problemi nel campo delle idee:
 -aggiustare i centipawns tramite i pesi
 -estrarre il board color dal fen 
 -la safeness deve essere assoluta o relativa
-
+-capire per quante mosse in avanti deve guardare questo algoritmo
 -capire come applicare pesi alla standard deviation
+
+-check gamenode per capire come applicare variazioni
+
+next steps:
+- understand how many moves to go ahead 
+- do an average of the safeness of the various vars to get whose one is the safest
+- create an actual variation

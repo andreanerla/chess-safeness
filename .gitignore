@@ -1,2 +1,5 @@
 /venv
 /diffs
+/__pycache__
+/.mypy_cache
+/.vscode
