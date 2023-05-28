@@ -3,7 +3,7 @@ import logging
 from dataclasses import dataclass
 from enum import Enum
 from numpy import std, mean
-from chess import engine, Board, Move
+from chess import engine, Board, Move, pgn
 from typing import List 
 
 logging.getLogger().setLevel(logging.INFO) #to display also info in terminal
@@ -46,6 +46,7 @@ def colour_from_fen(fen: str) -> Colour:
 def evals_ordering(evals: list, colour: Colour) -> list:
     if colour == Colour.black:
         evals.reverse()
+    logging.info(f"evals: {evals}")
     return evals
 
 
@@ -94,6 +95,16 @@ def safeness_cx_variance(cp_list:List[int]) -> float:
     return cx_variance
 
 
+def board_from_pgn_mainline_game(pgn: pgn.Game) -> Board:
+    'returns board from a pgn mainline game'
+
+    board = pgn.board()
+    for move in pgn.mainline_moves():
+        board.push(move)
+    
+    logging.info(f"board: {board}")
+    return board
+
 
 ###############
 #SUCCESSIVE EVAL FUNCS
@@ -108,16 +119,30 @@ def safeness_cx_variance(cp_list:List[int]) -> float:
 
 def variation_from_analysis(infos: list, var_number: int, number_of_moves: int) -> List[Move]: #why doesn't it check the return type?
     'selects a specific var from infos list. '
-    
+
     specific_var = infos[var_number]["pv"][0 : number_of_moves]
-    logging.info(f"specific_var: {specific_var}")
+    logging.info(f"specific_var: {specific_var}")    
+
     return specific_var
 
-def board_variation(board: Board, variation: List[Move]) -> Board: #check if it works
-    'moves the board according to a variation'
+def node_variation(variation: List[Move], game: pgn.Game) -> pgn.GameNode:
+    'adds a variation node from a list of moves'
+
+    for m in variation:
+        if "node" not in locals():
+            node = game.add_variation(m)
+        else:
+            node = node.add_variation(m)
+        logging.info(f"node.board(): {node.board()}")
     
-    for move in variation:
-        board_w_variation = board.push_san(str(move))
-    logging.info(f"board_w_variation: {board_w_variation}")
-    logging.info(f"board: {board}")
-    return board 
+    return node
+
+
+#def board_variation(board: Board, variation: variation_from_analysis) -> Board: #check if it works
+#    'moves the board according to a variation'
+#    
+#    for move in variation:
+#        board_w_variation = board.push_san(str(move))
+#    logging.info(f"board_w_variation: {board_w_variation}")
+#    logging.info(f"board: {board}")
+#    return board 

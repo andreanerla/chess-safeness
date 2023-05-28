@@ -1,6 +1,8 @@
 problemi:
 -division by zero error
 -in posizioni completamente patte dà safeness 0%
+- logging.info(f"pgn_after_variation: {test_pgn}") gives threading error
+
 
 problemi nel campo delle idee:
 - capire la formula da usare per definire la safeness
