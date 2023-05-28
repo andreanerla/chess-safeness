@@ -3,7 +3,8 @@ import logging
 from dataclasses import dataclass
 from enum import Enum
 from numpy import std, mean
-from chess import engine, Board, Move, pgn
+from chess import engine, engine, Board, Move, pgn
+import chess
 from typing import List 
 
 logging.getLogger().setLevel(logging.INFO) #to display also info in terminal
@@ -21,6 +22,21 @@ class Colour(Enum):
 #FUNCS
 ###############
 
+def engine_init() -> engine.SimpleEngine:
+    'initializes stockfish engine'
+
+    eng = engine.SimpleEngine.popen_uci("/usr/games/stockfish")
+    logging.info(f"type(eng: {type(eng)}")
+
+    return eng
+
+def info_retrieval(board: Board, eng: engine.SimpleEngine) -> List[dict]:
+    'infos from a board position, including eval at depth 15 and 5 variants'
+
+    res = eng.analyse(board, chess.engine.Limit(depth=15), multipv=5)
+    
+    return res
+
 def average_cp(cp_list: List[int]) -> float:
     'average of a list'
 
@@ -31,10 +47,12 @@ def uci_moves_to_list(uci_moves: str) -> list:
     return str_to_list
 
 
-def cp_score_to_int(variant: dict) -> int:
-    'gets a sf variant, returns cp in int' 
-    cp_int = variant['score'].relative.score()
-    return cp_int
+def list_cp_score_to_int(info: List[dict]) -> List[int]:         
+    'gets infos, returns list of cps' 
+
+    list_cp_int = [var['score'].relative.score() for var in info]
+    logging.info(f"cp_int: {list_cp_int}")
+    return list_cp_int
 
 
 def colour_from_fen(fen: str) -> Colour:
@@ -125,16 +143,25 @@ def variation_from_analysis(infos: list, var_number: int, number_of_moves: int) 
 
     return specific_var
 
-def node_variation(variation: List[Move], game: pgn.Game) -> pgn.GameNode:
-    'adds a variation node from a list of moves'
+def std_avg_node_variation(variation: List[Move], game: pgn.Game, info: List[dict], eng: engine.SimpleEngine) -> pgn.GameNode:
+    '''
+    adds a variation node from a list of moves
+    
+    P.S. should be broke up in two functions
+    '''
 
     for m in variation:
         if "node" not in locals():
             node = game.add_variation(m)
         else:
             node = node.add_variation(m)
-        logging.info(f"node.board(): {node.board()}")
+            board = node.board()
+            infos = info_retrieval(board = board, eng = eng)
+            #cps = cp_score_to_int(m)
+            #std =
+            logging.info(f"node.board(): {node.board()}")
     
+
     return node
 
 
