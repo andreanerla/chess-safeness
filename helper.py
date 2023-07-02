@@ -138,13 +138,14 @@ def variation_from_analysis(infos: list, var_number: int, number_of_moves: int) 
 
 
 def std_from_board(board: Board, eng: engine.SimpleEngine) -> float:
-    
+    'returns the std from a board'
+
     infos = info_retrieval(board = board, eng = eng)
 
     cps = list_cp_score_to_int(infos)
     logging.info(f"cps: {cps}")
 
-    std_ = safeness_std(cps)
+    std_: float = safeness_std(cps)
     logging.info(f"std: {std_}")
     
     return std_
