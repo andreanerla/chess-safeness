@@ -143,7 +143,7 @@ def variation_from_analysis(infos: list, var_number: int, number_of_moves: int) 
 
     return specific_var
 
-def std_avg_node_variation(variation: List[Move], game: pgn.Game, info: List[dict], eng: engine.SimpleEngine) -> pgn.GameNode:
+def std_avg_node_variation(variation: List[Move], game: pgn.Game, info: List[dict], eng: engine.SimpleEngine) -> int:
     '''
     adds a variation node from a list of moves
     
@@ -156,10 +156,19 @@ def std_avg_node_variation(variation: List[Move], game: pgn.Game, info: List[dic
         else:
             node = node.add_variation(m)
             board = node.board()
-            infos = info_retrieval(board = board, eng = eng)
-            #cps = cp_score_to_int(m)
-            #std =
             logging.info(f"node.board(): {node.board()}")
+
+            infos = info_retrieval(board = board, eng = eng)
+            logging.info(f"infos: {infos}")
+
+            cps = list_cp_score_to_int(infos)
+            logging.info(f"cps: {cps}")
+
+            std = safeness_std(cps)
+            logging.info(f"std: {std}")
+
+            
+            
     
 
     return node
