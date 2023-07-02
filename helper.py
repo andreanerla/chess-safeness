@@ -3,7 +3,7 @@ import logging
 from dataclasses import dataclass
 from enum import Enum
 from numpy import std, mean
-from chess import engine, engine, Board, Move, pgn
+from chess import engine, Board, Move, pgn
 import chess
 from typing import List 
 
@@ -86,9 +86,9 @@ def safeness_calculator_unweighted(cp_list: List[int]) -> float:
 
     logging.info(f"cp_list: {cp_list}")
     try:
-        safeness_perc = round((average_cp(cp_list) / cp_list[0])  * 100, 2)  
+        safeness_perc : float = round((average_cp(cp_list) / cp_list[0])  * 100, 2)  
     except ZeroDivisionError:
-        safeness_perc = round((average_cp(cp_list) / 0.01)  * 100, 2) #fix
+        safeness_perc : float = round((average_cp(cp_list) / 0.01)  * 100, 2) #fix
 
     logging.info(f"numerator; {average_cp(cp_list) / 0.01}")
 
@@ -128,57 +128,49 @@ def board_from_pgn_mainline_game(pgn: pgn.Game) -> Board:
 #SUCCESSIVE EVAL FUNCS
 ###############
 
-#def variation_from_analysis(infos: list, var_number: int, moves_number: int) -> List[Move]: #why doesn't it check the return type?
-#    'selects a specific var from infos list. '
-#
-#    specific_var = infos[var_number]["pv"][moves_number + 1]
-#    logging.info(f"specific_var: {specific_var}")
-#    return specific_var
-
 def variation_from_analysis(infos: list, var_number: int, number_of_moves: int) -> List[Move]: #why doesn't it check the return type?
     'selects a specific var from infos list. '
 
-    specific_var = infos[var_number]["pv"][0 : number_of_moves]
+    specific_var: List[Move] = infos[var_number]["pv"][0 : number_of_moves]
     logging.info(f"specific_var: {specific_var}")    
 
     return specific_var
 
-def std_avg_node_variation(variation: List[Move], game: pgn.Game, info: List[dict], eng: engine.SimpleEngine) -> int:
+
+def std_from_board(board: Board, eng: engine.SimpleEngine) -> float:
+    
+    infos = info_retrieval(board = board, eng = eng)
+
+    cps = list_cp_score_to_int(infos)
+    logging.info(f"cps: {cps}")
+
+    std_ = safeness_std(cps)
+    logging.info(f"std: {std_}")
+    
+    return std_
+
+def game_add_variation(variation: List[Move], game: pgn.Game, infos: List[dict], eng: engine.SimpleEngine) -> Board:
     '''
     adds a variation node from a list of moves
     
     P.S. should be broke up in two functions
     '''
-
+    
+    std_list: list = []
+    
     for m in variation:
         if "node" not in locals():
-            node = game.add_variation(m)
+            node: pgn.ChildNode = game.add_variation(m)
         else:
-            node = node.add_variation(m)
-            board = node.board()
+            node: pgn.ChildNode = node.add_variation(m)
+            board: Board = node.board()
             logging.info(f"node.board(): {node.board()}")
 
-            infos = info_retrieval(board = board, eng = eng)
-            logging.info(f"infos: {infos}")
-
-            cps = list_cp_score_to_int(infos)
-            logging.info(f"cps: {cps}")
-
-            std = safeness_std(cps)
-            logging.info(f"std: {std}")
-
-            
-            
+            std_from_board_ = std_from_board(board = board, eng = eng)
     
+            std_list.append(std_from_board_)
 
-    return node
+    avg_std_: float = mean(std_list)           
+    logging.info(f"avg_std_: {avg_std_}")
 
-
-#def board_variation(board: Board, variation: variation_from_analysis) -> Board: #check if it works
-#    'moves the board according to a variation'
-#    
-#    for move in variation:
-#        board_w_variation = board.push_san(str(move))
-#    logging.info(f"board_w_variation: {board_w_variation}")
-#    logging.info(f"board: {board}")
-#    return board 
+    return board

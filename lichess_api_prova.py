@@ -1,6 +1,4 @@
-from helper import engine_init, variation_from_analysis, safeness_std, evals_ordering, colour_from_fen, list_cp_score_to_int, board_from_pgn_mainline_game, std_avg_node_variation, info_retrieval  
-from helper import Colour
-from chess import engine, Board, pgn
+from helper import engine_init, variation_from_analysis, safeness_std, evals_ordering, colour_from_fen, list_cp_score_to_int, board_from_pgn_mainline_game, std_from_board, info_retrieval, game_add_variation
 import chess 
 
 if __name__ == "__main__":
@@ -19,8 +17,7 @@ if __name__ == "__main__":
     ordered_evals = evals_ordering(various_evals, colour)
     safeness_std_res = safeness_std(ordered_evals)
     var_1 = variation_from_analysis(info, 1, 6)
-    node_var_1 = std_avg_node_variation(variation = var_1, game = game, info = info, eng = eng)
-
-
+    #node_var_1 = std_avg_node_variation(variation = var_1, game = game, infos = info, eng = eng)
+    board_var_1 = game_add_variation(variation = var_1, game = game, infos = info, eng = eng) 
     eng.quit()
 

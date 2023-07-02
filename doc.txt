@@ -20,4 +20,4 @@ problemi nel campo delle idee:
 next steps:
 - understand how many moves to go ahead 
 - do an average of the safeness of the various vars to get whose one is the safest
-- create an actual variation
+
