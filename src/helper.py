@@ -5,7 +5,7 @@ from enum import Enum
 from numpy import std, mean
 from chess import engine, Board, Move, pgn
 import chess
-from typing import List 
+from typing import List
 
 logging.getLogger().setLevel(logging.INFO) #to display also info in terminal
 
@@ -34,11 +34,11 @@ def info_retrieval(board: Board, eng: engine.SimpleEngine) -> List[dict]:
     'infos from a board position, including eval at depth 15 and 5 variants'
 
     res = eng.analyse(board, chess.engine.Limit(depth=15), multipv=5)
-    
+
     return res
 
 def average_cp(cp_list: List[int]) -> float:
-    'average of a list'
+    'average of a list of ints'
 
     return sum(cp_list) / len(cp_list)
 
@@ -47,8 +47,8 @@ def uci_moves_to_list(uci_moves: str) -> list:
     return str_to_list
 
 
-def list_cp_score_to_int(info: List[dict]) -> List[int]:         
-    'gets infos, returns list of cps' 
+def list_cp_score_to_int(info: List[dict]) -> List[int]:
+    'gets infos, returns list of cps'
 
     list_cp_int = [var['score'].relative.score() for var in info]
     logging.info(f"cp_int: {list_cp_int}")
@@ -59,7 +59,7 @@ def colour_from_fen(fen: str) -> Colour:
     colour_index = (fen.index("- -") - 2)
     colour = Colour(fen[colour_index])
     logging.info(f"colour: {colour}")
-    return colour 
+    return colour
 
 def evals_ordering(evals: list, colour: Colour) -> list:
     if colour == Colour.black:
@@ -75,7 +75,7 @@ def evals_ordering(evals: list, colour: Colour) -> list:
 def safeness_calculator_plain_difference(cp_list: List[int]) -> int:
     logging.info(f"cp_list: {cp_list}")
 
-    plain_diff = cp_list[0] - cp_list[len(cp_list) - 1] 
+    plain_diff = cp_list[0] - cp_list[len(cp_list) - 1]
     logging.info(f"plain_diff: {plain_diff}")
 
     return plain_diff
@@ -86,7 +86,7 @@ def safeness_calculator_unweighted(cp_list: List[int]) -> float:
 
     logging.info(f"cp_list: {cp_list}")
     try:
-        safeness_perc : float = round((average_cp(cp_list) / cp_list[0])  * 100, 2)  
+        safeness_perc : float = round((average_cp(cp_list) / cp_list[0])  * 100, 2)
     except ZeroDivisionError:
         safeness_perc : float = round((average_cp(cp_list) / 0.01)  * 100, 2) #fix
 
@@ -107,7 +107,7 @@ def safeness_cx_variance(cp_list:List[int]) -> float:
 
     standard_dev = std(cp_list)
     average = mean(cp_list)
-    cx_variance = standard_dev / average 
+    cx_variance = standard_dev / average
     logging.info(f"standard_dev: {standard_dev}")
     logging.info(f"cx_variance: {cx_variance}")
     return cx_variance
@@ -119,7 +119,7 @@ def board_from_pgn_mainline_game(pgn: pgn.Game) -> Board:
     board = pgn.board()
     for move in pgn.mainline_moves():
         board.push(move)
-    
+
     logging.info(f"board: {board}")
     return board
 
@@ -132,7 +132,7 @@ def variation_from_analysis(infos: list, var_number: int, number_of_moves: int) 
     'selects a specific var from infos list. '
 
     specific_var: List[Move] = infos[var_number]["pv"][0 : number_of_moves]
-    logging.info(f"specific_var: {specific_var}")    
+    logging.info(f"specific_var: {specific_var}")
 
     return specific_var
 
@@ -147,18 +147,18 @@ def std_from_board(board: Board, eng: engine.SimpleEngine) -> float:
 
     std_: float = safeness_std(cps)
     logging.info(f"std: {std_}")
-    
+
     return std_
 
 def game_add_variation(variation: List[Move], game: pgn.Game, infos: List[dict], eng: engine.SimpleEngine) -> Board:
     '''
-    adds a variation node from a list of moves
-    
-    P.S. should be broke up in two functions
+    adds a variation node from a list of moves and calculates its average std
+
+    P.S. should be broken up in two functions
     '''
-    
+
     std_list: list = []
-    
+
     for m in variation:
         if "node" not in locals():
             node: pgn.ChildNode = game.add_variation(m)
@@ -168,10 +168,10 @@ def game_add_variation(variation: List[Move], game: pgn.Game, infos: List[dict],
             logging.info(f"node.board(): {node.board()}")
 
             std_from_board_ = std_from_board(board = board, eng = eng)
-    
+
             std_list.append(std_from_board_)
 
-    avg_std_: float = mean(std_list)           
+    avg_std_ = mean(std_list)
     logging.info(f"avg_std_: {avg_std_}")
 
     return board

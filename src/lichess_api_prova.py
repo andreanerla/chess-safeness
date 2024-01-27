@@ -10,7 +10,6 @@ if __name__ == "__main__":
     king_gambit_fen = "rnbqkbnr/pppp1ppp/8/4p3/4PP2/8/PPPP2PP/RNBQKBNR b KQkq - 0 2"
     ruy_lopez_fen = "r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3"
 
-    #board = Board(sharp_fen)
     board = Board()
     board.set_fen(king_gambit_fen)
     game = chess.pgn.Game()
@@ -24,5 +23,6 @@ if __name__ == "__main__":
     var_1 = variation_from_analysis(info, 1, 6)
     #node_var_1 = std_avg_node_variation(variation = var_1, game = game, infos = info, eng = eng)
     board_var_1 = game_add_variation(variation = var_1, game = game, infos = info, eng = eng) 
+    
     eng.quit()
 

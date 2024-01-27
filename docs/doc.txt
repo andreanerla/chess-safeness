@@ -7,10 +7,10 @@ problemi:
 problemi nel campo delle idee:
 - capire la formula da usare per definire la safeness
 - https://lichess.org/api#tag/Analysis per l'api
-- convertire tutto in rust  
+- convertire tutto in rust
 - provare con una variante a capire il suo cp e i cp delle prossime mosse (5) e calcolare la safeness con l'algoritmo
--aggiustare i centipawns tramite i pesi
--estrarre il board color dal fen 
+-aggiustare i centipawns tramite i pesi (logarithmically?)
+-estrarre il board color dal fen
 -la safeness deve essere assoluta o relativa
 -capire per quante mosse in avanti deve guardare questo algoritmo
 -capire come applicare pesi alla standard deviation
@@ -18,6 +18,6 @@ problemi nel campo delle idee:
 -check gamenode per capire come applicare variazioni
 
 next steps:
-- understand how many moves to go ahead 
+- understand how many moves to go ahead
 - do an average of the safeness of the various vars to get whose one is the safest
 
